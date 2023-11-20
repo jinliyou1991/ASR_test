@@ -12,10 +12,10 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--Noisy_path', type=str, default='/home/jin/mnt/Intern_SE/Data/clean_testset_wav')
-    parser.add_argument('--text_path', type=str, default='/home/jin/mnt/VCTK_28spk/test_txt')
-    parser.add_argument('--score_WER_floder', type=str, default='/home/jin/mnt/ASR_test/score/WER') 
-    parser.add_argument('--results_floder', type=str, default='/home/jin/mnt/ASR_test/results') 
-    parser.add_argument('--task', type=str, default='VCTK_noisy') 
+    parser.add_argument('--text_path', type=str, default='/home/jin/mnt/VCTK_28spk/test_txt') #transformerencoder
+    parser.add_argument('--score_WER_floder', type=str, default='/home/jin/mnt/ASR_test/score/WER') #transformerencoder
+    parser.add_argument('--results_floder', type=str, default='/home/jin/mnt/ASR_test/results') #transformerencoder
+    parser.add_argument('--task', type=str, default='VCTK_noisy') #transformerencoder
 
     args = parser.parse_args()
     return args
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     file_path = get_filepaths(args.Noisy_path, ftype='wav')
     model1 = whisper.load_model("base", device=DEVICE)
     model2 = whisper.load_model("large-v2", device=DEVICE)
-    model3 = whisper.load_model("large-v3", device=DEVICE)
+    model3 = whisper.load_model("large", device=DEVICE)
     
     all_g_pred =''
     all_b_pred =''
@@ -66,10 +66,10 @@ if __name__ == '__main__':
         tt = open(t_path, 'r')
         txt = tt.read().split('\n')[0]
                     
-        g_wer = jwer(txt,g_pred)
-        b_wer = jwer(txt,b_pred)
-        l2_wer = jwer(txt,l2_pred)
-        l3_wer = jwer(txt,l3_pred)
+        g_wer = nwer(txt,g_pred)
+        b_wer = nwer(txt,b_pred)
+        l2_wer = nwer(txt,l2_pred)
+        l3_wer = nwer(txt,l3_pred)
         tt.close()
         
         all_g_pred = all_g_pred + ' ' + g_pred
@@ -93,10 +93,13 @@ if __name__ == '__main__':
     with open(score_WER_path, 'a') as f1:
         f1.write(','.join(('Average',str(g_wer_mean),str(b_wer_mean),str(l2_wer_mean),str(l3_wer_mean)))+'\n')
         
-    all_g_wer = jwer(all_ans,all_g_pred)
-    all_b_wer = jwer(all_ans,all_b_pred)
-    all_l2_wer = jwer(all_ans,all_l2_pred)
-    all_l3_wer = jwer(all_ans,all_l3_pred)
+    all_g_wer = nwer(all_ans,all_g_pred)
+    all_b_wer = nwer(all_ans,all_b_pred)
+    all_l2_wer = nwer(all_ans,all_l2_pred)
+    all_l3_wer = nwer(all_ans,all_l3_pred)
     
     with open(score_WER_path, 'a') as f1:
         f1.write(','.join(('All_WER',str(all_g_wer),str(all_b_wer),str(all_l2_wer),str(all_l3_wer)))+'\n')
+        
+    with open(results_path, 'a') as f2:
+        f2.write(','.join(('All_Pred',str(all_g_pred),str(all_b_pred),str(all_l2_pred),str(all_l3_pred)))+'\n')
