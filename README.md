@@ -1,4 +1,4 @@
-# Update informatin (2023/11/28)
+# Update informatin (2023/11/18)
 
 1.  針對 VCTK 及 TMHINTQI dataset調整 分別對應不同語言
    
@@ -17,3 +17,13 @@
   3e. 要使用 whisper large-v3 請先更新whisper安裝包到1106的版本，可以使用這個方法更新
   
       pip install -U openai-whisper
+
+# Update informatin (2023/11/20)
+
+1. 修正 WER CER 的算法
+
+a. WER去除標點符號影響
+
+b. CER去除空格與標點符號影響
+
+2. 紀錄串接每句ASR的結果
