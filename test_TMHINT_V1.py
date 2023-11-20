@@ -13,10 +13,10 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--Noisy_path', type=str, default='/mnt/ASR_test/Data/TMHINTQI_V2_PCM')
-    parser.add_argument('--text_path', type=str, default='/home/jin/mnt/ASR_test/Data/320.csv')
-    parser.add_argument('--score_floder', type=str, default='./score')
-    parser.add_argument('--results_floder', type=str, default='./results') 
-    parser.add_argument('--task', type=str, default='TMHINT_QI_V2')
+    parser.add_argument('--text_path', type=str, default='/home/jin/mnt/ASR_test/Data/320.csv') #transformerencoder
+    parser.add_argument('--score_floder', type=str, default='./score') #transformerencoder
+    parser.add_argument('--results_floder', type=str, default='./results') #transformerencoder
+    parser.add_argument('--task', type=str, default='TMHINT_QI_V2') #transformerencoder
 
     args = parser.parse_args()
     return args
@@ -68,10 +68,10 @@ if __name__ == '__main__':
         tt = open(args.text_path, 'r')
         txt = tt.read().split('\n')[int(num)]
         
-        g_wer = jwer(txt,g_pred)
-        b_wer = jwer(txt,b_pred)
-        l2_wer = jwer(txt,l2_pred)
-        l3_wer = jwer(txt,l3_pred)
+        g_wer = ncer(txt,g_pred)
+        b_wer = ncer(txt,b_pred)
+        l2_wer = ncer(txt,l2_pred)
+        l3_wer = ncer(txt,l3_pred)
         tt.close()
         
         all_g_pred = all_g_pred + ' '+ g_pred
@@ -95,10 +95,12 @@ if __name__ == '__main__':
     with open(score_path, 'a') as f1:
         f1.write(','.join(('Average',str(g_wer_mean),str(b_wer_mean),str(l2_wer_mean),str(l3_wer_mean)))+'\n')
         
-    all_g_wer = jwer(all_ans,all_g_pred)
-    all_b_wer = jwer(all_ans,all_b_pred)
-    all_l2_wer = jwer(all_ans,all_l2_pred)
-    all_l3_wer = jwer(all_ans,all_l3_pred)
+    all_g_wer = ncer(all_ans,all_g_pred)
+    all_b_wer = ncer(all_ans,all_b_pred)
+    all_l2_wer = ncer(all_ans,all_l2_pred)
+    all_l3_wer = ncer(all_ans,all_l3_pred)
     
     with open(score_path, 'a') as f1:
         f1.write(','.join(('All_WER',str(all_g_wer),str(all_b_wer),str(all_l2_wer),str(all_l3_wer)))+'\n')
+    with open(results_path, 'a') as f2:
+        f2.write(','.join(('All_Pred',str(all_g_pred),str(all_b_pred),str(all_l2_pred),str(all_l3_pred)))+'\n')
